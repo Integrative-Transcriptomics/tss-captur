@@ -448,7 +448,7 @@ process runRNAfold{
     python3 $pyExtractRNATranscripts --rnas $terminator --genome_path $genomes
     $rnafold --noLP -i *.fasta > rnaFold.out
     gawk '/^>/ {printf("%s%s\\t",(N>0?"\\n":""), \$0);N++;next;} {match(\$0, /(.*)\\s\\((.*)\\)/, ary); if (length(ary)>0) {printf("%s\\t%s",ary[1],ary[2]);} else { printf("%s\\t", \$0)}} END {printf("\\n");}' rnaFold.out > temp
-    gawk -F "\t" '{len=length(\$1); \$4=(\$4/len);print }' temp > ${terminator.baseName - "_allocated_terminators"}.tsv
+    gawk -F "\t" -v OFS='\t' '{len=length(\$1); \$4=(\$4/len);print }' temp > ${terminator.baseName - "_allocated_terminators"}.tsv
     gmt psconvert *.ps
     
     """

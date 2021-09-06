@@ -27,6 +27,8 @@ def createRows(row):
 
 def modifyMFE(row):
     row["transcript_id"] = row[0].replace(">", "")
+    print(row)
+
     row["mfe"] = row[3]
     return row[["transcript_id", "mfe"]]
 
