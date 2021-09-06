@@ -255,16 +255,34 @@ process evaluateBlast {
 
 
 }
+/**
+    Divides the BLAST resulting files into many subfiles for improving QRNA performance  
+*/
+process splitBLASTforQRNA{
+
+    input: 
+    each blasted_file from filtered_queries_ch
+
+    output:
+    path "*.tsv" into filtered_queries_ch_splitted
+
+    """
+       split -l 20 --additional-suffix=.tsv $blasted_file ${blasted_file.baseName}.
+    """
+
+
+}
 
 /**
     runs QRNA for the classification
 */
 process runQRNAnormal{
     cache "lenient"
-    // publishDir "$output_path/Classification/QRNA/Results", mode: 'copy' // Put in one folder QRNA/result
+    publishDir "$output_path/Classification/QRNA/Results", mode: 'copy' // Put in one folder QRNA/result
 
     input: 
-    each blasted_file from filtered_queries_ch
+    // each blasted_file from filtered_queries_ch
+    each blasted_file from filtered_queries_ch_splitted
     val output_path from output_path
     env QRNADB from eqrnaLib
 
@@ -281,6 +299,7 @@ process runQRNAnormal{
 
 
 qrna_normal.collect().set{qrna_evaluate}
+// The blasted_files_qrna_check variable helps for the correction of the UTR length using the coordinates from the blasted file. 
 filtered_queries_for_qrna_check.collect().set{blasted_files_qrna_check}
 
 /**
