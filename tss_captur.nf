@@ -273,16 +273,18 @@ process splitBLASTforQRNA{
 
 }
 
+filtered_queries_ch_splitted.collect().flatten().set(joined_splitted_blast)
 /**
     runs QRNA for the classification
 */
 process runQRNAnormal{
     cache "lenient"
+    cpus 8
     publishDir "$output_path/Classification/QRNA/Results", mode: 'copy' // Put in one folder QRNA/result
 
     input: 
     // each blasted_file from filtered_queries_ch
-    each blasted_file from filtered_queries_ch_splitted
+    each blasted_file from joined_splitted_blast
     val output_path from output_path
     env QRNADB from eqrnaLib
 
