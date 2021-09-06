@@ -273,7 +273,7 @@ process splitBLASTforQRNA{
 
 }
 
-filtered_queries_ch_splitted.flatten().set(joined_splitted_blast)
+filtered_queries_ch_splitted.flatten().set{joined_splitted_blast}
 /**
     runs QRNA for the classification
 */
