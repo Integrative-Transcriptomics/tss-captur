@@ -27,8 +27,6 @@ def createRows(row):
 
 def modifyMFE(row):
     row["transcript_id"] = row[0].replace(">", "")
-    print(row)
-
     row["mfe"] = row[3]
     return row[["transcript_id", "mfe"]]
 
@@ -202,6 +200,7 @@ if __name__ == '__main__':
     genome = genomes[index]
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
-    app.config["FREEZER_DESTINATION"] = os.path.join(
-        args.path, "Interface")
-    freezer.freeze()
+    # app.config["FREEZER_DESTINATION"] = os.path.join(
+    # args.path, "Interface")
+    app.run(port=int("3001"))
+    # freezer.freeze()
