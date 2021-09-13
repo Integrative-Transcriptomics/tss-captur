@@ -96,7 +96,7 @@ def createOverviewData(pathToData, genome):
     all_dfs = all_dfs.drop(
         ["start_with_terminator", "end_with_terminator", "PredictionEnd", "PredictionStart"], axis=1).reset_index().fillna(toFillNA)
     all_dfs.to_csv("%s_overview.tsv" % genome, sep="\t", index=False)
-    return [all_dfs.values.tolist(), summary_motifs.values.tolist()]
+    return [all_dfs.values.tolist(), summary_motifs.values.tolist(), list(all_dfs), list(summary_motifs)]
 
 
 @ app.context_processor
@@ -107,7 +107,10 @@ def give_genomes():
     terminators = data["terminators"]
     summaryMotifs = data["summary_motifs"]
     short_description = data["short_description"]
-    return dict(genomes=genomes, outputPath=outputPath, short_description=short_description, avoidedTSS=avoided, classified=classifiedData, terminators=terminators, overviewData=overviewData, summaryMotifs=summaryMotifs)
+    data_dict = dict(genomes=genomes, outputPath=outputPath, short_description=short_description, avoidedTSS=avoided, classified=classifiedData,
+                     terminators=terminators, overviewData=overviewData, summaryMotifs=summaryMotifs, columnNames=data["column_names_overview"])
+
+    return data_dict
 
 
 @ app.route('/overview.html')
@@ -183,7 +186,7 @@ if __name__ == '__main__':
         genomes = [i.strip() for i in f.readlines()]
     genomes.sort()
     print("Genomes found: %s" % ", ".join(genomes))
-    data = {"avoided": {}, "overview": {},
+    data = {"avoided": {}, "overview": {}, "column_names_overview": {},
             "classification": {}, "terminators": {}, "summary_motifs": {}, "short_description": {}}
     for it, g in enumerate(genomes):
         print("Parsing data: {} % ".format(100 * float(it) / len(genomes)))
@@ -193,6 +196,7 @@ if __name__ == '__main__':
         temp_overview = createOverviewData(outputPath, g)
         data["overview"][g] = temp_overview[0]
         data["summary_motifs"][g] = temp_overview[1]
+        data["column_names_overview"][g] = temp_overview[2]
         data["short_description"][g] = createShort(
             temp_overview[0], data["avoided"][g])
     print("Parsing completed. Freezing Interface.")

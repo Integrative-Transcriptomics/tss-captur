@@ -19,6 +19,11 @@
     have been adapted. Also, a secondary structure analysis is run for RNA transcripts and allows a visualization of it.
     All transcript undergo a motif analysis of the promoter region using MEME. A short descriptive overview follows:
 </p>
+
+
+
+
+
 <div class="row">
 
     <div class="col-xl-3 col-md-6 mb-4">
@@ -43,10 +48,12 @@
                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                             Total of Orphan TSS</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800"><span id="OTSS"></span></div>
-                        <div class="h6 mb-0 font-weight-bold text-gray-800">Coding: <span id="CodingOTSS"></span></div>
+                        <div class="h6 mb-0 font-weight-bold text-gray-800">Coding: <span id="CodingOTSS"></span>
+                        </div>
                         <div class="h6 mb-0 font-weight-bold text-gray-800">ncRNAs: <span id="ncOTSS"></span></div>
-                        <div id="not-classified-or" class="h6 mb-0 font-weight-bold text-gray-800">Not classified: <span
-                                id="noclassOR"></span></div>
+                        <div id="not-classified-or" class="h6 mb-0 font-weight-bold text-gray-800">Not classified:
+                            <span id="noclassOR"></span>
+                        </div>
                     </div>
 
                 </div>
@@ -62,10 +69,12 @@
                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                             Total of Antisense TSS</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800"><span id="ATSS"></span></div>
-                        <div class="h6 mb-0 font-weight-bold text-gray-800">Coding: <span id="CodingATSS"></span></div>
+                        <div class="h6 mb-0 font-weight-bold text-gray-800">Coding: <span id="CodingATSS"></span>
+                        </div>
                         <div class="h6 mb-0 font-weight-bold text-gray-800">ncRNAs: <span id="ncATSS"></span></div>
-                        <div id="not-classified-as" class="h6 mb-0 font-weight-bold text-gray-800">Not classified: <span
-                                id="noclassAS"></span></div>
+                        <div id="not-classified-as" class="h6 mb-0 font-weight-bold text-gray-800">Not classified:
+                            <span id="noclassAS"></span>
+                        </div>
 
                     </div>
 
@@ -88,12 +97,77 @@
         </div>
     </div>
 </div>
+
 <!-- Content Row -->
 <div class="card shadow mb-4">
     <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary">Overview of TSS characterization</h6>
     </div>
     <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <a data-toggle="collapse" href="#collapseColumnsChoice" aria-expanded="false"
+                                aria-controls="collapseColumnsChoice">
+                                Select columns</a>
+                        </h6>
+                    </div>
+                    <div class="collapse" id="collapseColumnsChoice">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <!-- <div style="scroll-behavior: auto; max-height:100px"> -->
+                                    <div>
+                                        <form id=selectionColumns>
+                                        </form>
+                                    </div>
+
+                                    <a onclick="updateColumns()" class="btn btn-info btn-icon-split"
+                                        style="float: right;">
+                                        <span class="icon text-white-50">
+                                            <i class="fas fa-info-circle"></i>
+                                        </span>
+                                        <span class="text">Show columns</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <a href="#" class="btn btn-info btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-info-circle"></i>
+                    </span>
+                    <span class="text">Select all?</span>
+                </a>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <a href="#" class="btn btn-info center btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-info-circle"></i>
+                    </span>
+                    <span class="text">Filter</span>
+                </a>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <a href="#" class="btn btn-info btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-info-circle"></i>
+                    </span>
+                    <span class="text">Export</span>
+                </a>
+            </div>
+        </div>
         <div class="table-responsive">
             <table class="table table-bordered" id="dataTableOverview" cellspacing="0">
 
@@ -116,17 +190,65 @@
 </div>
 
 <script type='text/javascript'>
+    const FROM_COLNAME_TO_TITLE = {
+        "index": { title: "Transcript ID", default: true, category: "main" },
+        "position": { title: "TSS Position", default: true, category: "main" },
+        "strand": { title: "Strand", default: true, category: "main" },
+        "transcript_length": { title: "Extracted length", default: true, category: "main" },
+        "winner": { title: "Gene class", default: true, category: "main" },
+        "feature": { title: "Predicted terminator", default: true, category: "main" },
+        "term_start": { title: "Term. start", default: true, category: "main" },
+        "term_end": { title: "Term. end", default: true, category: "main" },
+        "mfe": { title: "MFE (kcal/mol)", default: true, category: "main" },
+        "summary": { title: "Promoter motifs", renderTitle: returnMotifSummary, default: true, category: "main" },
+        "GeneStart": { title: "Gene start", default: true, category: "main" },
+        "GeneEnd": { title: "Gene end", default: true, category: "main" },
+        "GeneLength": { title: "Gene length", default: true, category: "main" },
+        "GeneLengthWithUTR": { title: "Length with 5' UTR", default: true, category: "main" },
+        "url_for_image": { title: "RNA-Structure", default: true, category: "main" },
+    }
+    function returnMotifSummary(summary) {
+        return `<a target="_blank" rel="noopener noreferrer"    data-html="true" class="wide-tooltip link-to-motif" data-toggle="tooltip" title="${summary}">Promoter motifs</a>`
+    }
 
 
+    function updateColumns() {
+        console.log("TEST");
+    }
 
     index = localStorage.getItem("genome") ? localStorage.getItem("genome") : 0;
     genome_selected = genomes[index];
     let dataOverview = overviewData[genome_selected].map(x => [""].concat(x));
+    console.log(dataOverview);
     // console.log(dataOverview.forEach());
     // dataOverview = dataOverview.map(x => x.unshift(""))
     let dataSummary = summaryMotifs[genome_selected];
     let summary = dataSummary.map(x => `${x[0]} (${x[1]})<br/>Appears ${x[3]} times (E-value: ${x[2].toExponential(2)})`).join("<br/>");
+
+
+
+    function createCheckbox(name) {
+        let idCheckbox = `checkbox-${name}`
+        let is_checked = (FROM_COLNAME_TO_TITLE[name].default) ? "checked" : ''
+        return `<div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="${idCheckbox}" ${is_checked} />
+                    <label class="form-check-label" for= "${idCheckbox}" >
+                        ${FROM_COLNAME_TO_TITLE[name].title}
+                    </label >
+                    </div> `
+    }
+
+    function prepareColumnSelection() {
+        for (let colName of columnNames[genome_selected]) {
+            $("#selectionColumns").append(createCheckbox(colName));
+        }
+
+    }
+
+
     $(document).ready(function () {
+
+        prepareColumnSelection();
 
         $("#dataTableOverview").DataTable({
             dom: "Blfrtip",
@@ -180,8 +302,8 @@
                         if (data != "NA") {
                             // console.log(data);
                             // console.log(row);
-                            let string = data.map(x => `${x[0]} found at crd. ${x[1] - 51} (p-value: ${x[2].toExponential(2)})`)
-                            return `<a target="_blank" rel="noopener noreferrer"  data-container="body" href="../MotifAnalysis/${genome_selected}/meme_out/meme.html" data-html="true" data-toggle="tooltip" class="header-tooltip link-to-motif" title="${string.join("<br/>")}">${data.length} motifs found </a>`;
+                            let string = data.map(x => `${x[0]} found at crd.${x[1] - 51} (p - value: ${x[2].toExponential(2)})`)
+                            return `<a target="_blank" rel = "noopener noreferrer"  data - container="body" href = "../MotifAnalysis/${genome_selected}/meme_out/meme.html" data-html="true" data - toggle="tooltip" class="header-tooltip link-to-motif" title = "${string.join(" < br /> ")}" > ${data.length} motifs found </a > `;
                         } else {
                             return ""
                         }
@@ -213,7 +335,7 @@
                 { title: "Terminator Start" },
                 { title: "Terminator End" },
                 { title: "MFE (kcal/mol)" },
-                { title: `<a target="_blank" rel="noopener noreferrer"    data-html="true" class="wide-tooltip link-to-motif" data-toggle="tooltip" title="${summary}">Promoter motifs</a>` },
+                { title: returnMotifSummary(summary) },
                 { title: "Gene Start" },
                 { title: "Gene End" },
                 { title: "Length of Gene" },
